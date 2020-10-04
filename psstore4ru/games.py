@@ -40,6 +40,15 @@ class PS4Game:
     def __get_description(self):
         return self.soup.find("div", SELECTORS["description"]).text or ""
 
+    def __get_language(self):
+        return set(filter(lambda l: l in self.languages, self.specs))
+
+    def __get_genre(self):
+        return set(filter(lambda g: g in self.genres, self.specs)) or None
+
+    def __get_size(self):
+        return " ".join(self.specs[self.specs.index('Размер файла'):]) or None
+
     def __load_page(self):
         response = requests.get(self.url.encode("utf-8").decode("utf-8-sig"))
         html = response.content
@@ -63,20 +72,6 @@ class PS4Game:
         except Exception:
             pass
 
-        try:
-            specs = list(map(lambda x: x.strip(),
-                         soup.find("div", SELECTORS["specs"]).text.split('\n')))
-            self.lang = set(filter(lambda l: l in self.languages, specs))
-            # Game genre
-            self.genre = set(filter(lambda g: g in self.genres, specs))
-            # Game file size
-            try:
-                self.size = " ".join(specs[specs.index('Размер файла'):])
-            except ValueError:
-                pass
-        except AttributeError:
-            pass
-
     # Retrieve results in JSON
     def as_json(self):
         self.__load_page()
@@ -91,10 +86,10 @@ class PS4Game:
                 "previous price": self.__get_former_price(),
                 "on sale": True if self.__get_former_price() else False,
                 "PS Plus discount": self.__get_ps_plus(),
-                "size": self.size,
+                "size": self.__get_size(),
                 "age limit": self.age,
                 "description": self.__get_description(),
-                "cover": self.cover,
+                "cover": self.__get_cover(),
                 "screenshots": self.screenshots,
             }
         }
