@@ -1,7 +1,7 @@
 import requests
 import re
 import json
-from .variables import SPECS, GAME_SELECTORS, EXTERNAL
+from variables import SPECS, GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
 
 
