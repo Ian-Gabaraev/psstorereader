@@ -2,6 +2,7 @@ import re
 
 EXTERNAL = {
     "host": 'https://store.playstation.com',
+    "product": 'https://store.playstation.com/ru-ru/product/',
     "ftp home": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-FREETOPLAYSEEALL/1',
     "ftp": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-FREETOPLAYSEEALL/%d',
     "soon home": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-COMINGSOON/1',

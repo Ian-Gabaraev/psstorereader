@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 class PS4Game:
     def __init__(self, url: str = None, alias: str = None):
-        self.url = url if url else
+        self.url = url if url else f"{EXTERNAL['product']}{alias}"
         self.languages = SPECS["languages"]
         self.genres = SPECS["genres"]
         self.soup = None
