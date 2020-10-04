@@ -3,7 +3,8 @@ from utils import Helpers
 from variables import EXTERNAL, SELECTORS, PATTERNS
 
 
-class PlayStationStoreWebsite:
+class PS4StoreRussia:
+
     def __init__(self):
         self.store_homepage = EXTERNAL["store_homepage"]
         self.new_games_homepage = EXTERNAL["new_games_homepage"]
@@ -114,7 +115,7 @@ class PlayStationStoreWebsite:
         for thread in self.threads:
             thread.join()
 
-    def ps_plus_deals(self):
+    def get_ps_plus_deals(self):
         soup = Helpers.get_soup(EXTERNAL["ps plus"])
         divs = soup.find_all('div', SELECTORS["ps plus container"])
         for container in divs:
@@ -144,5 +145,5 @@ class PlayStationStoreWebsite:
 
 
 print(
-    PlayStationStoreWebsite().get_f2p_games()
+    PS4StoreRussia().get_f2p_games()
 )
