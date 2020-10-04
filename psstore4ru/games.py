@@ -18,36 +18,55 @@ class PS4Game:
         self.specs = []
 
     def __get_title(self):
-        return self.soup.find("h2", GAME_SELECTORS["title"]).text or ""
+        return self.soup.find("h2", GAME_SELECTORS["title"]).text
 
     def __get_publisher(self):
-        publisher = self.soup.find("h5", GAME_SELECTORS["publisher"]).text
-        return "" if '\n' in publisher else publisher
+        try:
+            publisher = self.soup.find("h5", GAME_SELECTORS["publisher"]).text
+        except AttributeError:
+            return ""
+        else:
+            return "" if '\n' in publisher else publisher
 
     def __get_category(self):
-        return self.soup.find("span", GAME_SELECTORS["category"]).text or ""
+        try:
+            return self.soup.find("span", GAME_SELECTORS["category"]).text
+        except AttributeError:
+            return ""
 
     def __get_price(self):
-        return int(re.sub(r'\D', '', self.soup.find("h3", GAME_SELECTORS["price"]).text)) or 0
+        try:
+            return int(re.sub(r'\D', '', self.soup.find("h3", GAME_SELECTORS["price"]).text))
+        except AttributeError:
+            return 0
 
     def __get_former_price(self):
-        return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["previous price"]).text)) or 0
+        try:
+            return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["previous price"]).text))
+        except AttributeError:
+            return 0
 
     def __get_ps_plus(self):
-        return self.soup.find("div", GAME_SELECTORS["psplus discount"]).text
+        try:
+            return self.soup.find("div", GAME_SELECTORS["psplus discount"]).text
+        except AttributeError:
+            return ""
 
     def __get_cover(self):
         cover_picture_url = self.soup.select(GAME_SELECTORS["cover"])
         return cover_picture_url[0]['src'] or ""
 
     def __get_description(self):
-        return self.soup.find("div", GAME_SELECTORS["description"]).text or ""
+        try:
+            return self.soup.find("div", GAME_SELECTORS["description"]).text
+        except AttributeError:
+            return ""
 
     def __get_language(self):
-        return list(set(filter(lambda l: l in self.languages, self.specs))) or []
+        return list(set(filter(lambda l: l in self.languages, self.specs)))
 
     def __get_genre(self):
-        return list(set(filter(lambda g: g in self.genres, self.specs))) or []
+        return list(set(filter(lambda g: g in self.genres, self.specs)))
 
     def __get_size(self):
         return " ".join(self.specs[self.specs.index('Размер файла'):]) or None
@@ -69,8 +88,22 @@ class PS4Game:
         self.soup = BeautifulSoup(html, features='html.parser')
         self.specs = list(map(lambda x: x.strip(), self.soup.find("div", GAME_SELECTORS["specs"]).text.split('\n')))
 
-    # Retrieve results in JSON
+    def as_yaml(self):
+        """
+        Return game info as YAML
+        """
+        pass
+
+    def as_xml(self):
+        """
+        Return game info as XML
+        """
+        pass
+
     def as_json(self):
+        """
+        Return game info as JSON string
+        """
         self.__load_page()
 
         description = {
@@ -94,6 +127,3 @@ class PS4Game:
         }
 
         return json.dumps(description, ensure_ascii=False, indent=4)
-
-
-print(PS4Game(alias='EP0002-CUSA23470_00-CB4STANDARD00001').as_json())
