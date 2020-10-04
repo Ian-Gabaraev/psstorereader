@@ -1,7 +1,7 @@
 import requests
 import re
 import json
-from variables import APP_PARAMETERS, EXTERNAL, SPECS, SELECTORS
+from variables import SPECS, GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
 
 
@@ -18,31 +18,30 @@ class PS4Game:
         self.specs = []
 
     def __get_title(self):
-        return self.soup.find("h2", SELECTORS["title"]).text or ""
+        return self.soup.find("h2", GAME_SELECTORS["title"]).text or ""
 
     def __get_publisher(self):
-        publisher = self.soup.find("h5", SELECTORS["publisher"]).text
+        publisher = self.soup.find("h5", GAME_SELECTORS["publisher"]).text
         return "" if '\n' in publisher else publisher
 
     def __get_category(self):
-        return self.soup.find("span", SELECTORS["category"]).text or ""
+        return self.soup.find("span", GAME_SELECTORS["category"]).text or ""
 
     def __get_price(self):
-        return int(re.sub(r'\D', '', self.soup.find("h3", SELECTORS["price"]).text)) or 0
+        return int(re.sub(r'\D', '', self.soup.find("h3", GAME_SELECTORS["price"]).text)) or 0
 
     def __get_former_price(self):
-        return int(re.sub(r'\D', '', self.soup.find("span", SELECTORS["previous price"]).text)) or 0
+        return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["previous price"]).text)) or 0
 
     def __get_ps_plus(self):
-        return self.soup.find("div", SELECTORS["psplus discount"]).text
+        return self.soup.find("div", GAME_SELECTORS["psplus discount"]).text
 
     def __get_cover(self):
-        cover_picture_url = self.soup.select(SELECTORS["cover"])
-        if cover_picture_url:
-            self.cover = cover_picture_url[0]['src'] or ""
+        cover_picture_url = self.soup.select(GAME_SELECTORS["cover"])
+        return cover_picture_url[0]['src'] or ""
 
     def __get_description(self):
-        return self.soup.find("div", SELECTORS["description"]).text or ""
+        return self.soup.find("div", GAME_SELECTORS["description"]).text or ""
 
     def __get_language(self):
         return list(set(filter(lambda l: l in self.languages, self.specs))) or []
@@ -59,15 +58,16 @@ class PS4Game:
         return int(src_attribute.group(1)) or 0
 
     def __get_screenshots(self):
-        api_url = re.sub(r'\/image\?.*', '', self.cover)
-        json_data = requests.get(api_url).json()
-        return [element["url"] for element in json_data["mediaList"]["screenshots"]] or []
+        if self.__get_cover():
+            api_url = re.sub(r'\/image\?.*', '', self.__get_cover())
+            json_data = requests.get(api_url).json()
+            return [element["url"] for element in json_data["mediaList"]["screenshots"]] or []
 
     def __load_page(self):
         response = requests.get(self.url.encode("utf-8").decode("utf-8-sig"))
         html = response.content
         self.soup = BeautifulSoup(html, features='html.parser')
-        self.specs = list(map(lambda x: x.strip(), self.soup.find("div", SELECTORS["specs"]).text.split('\n')))
+        self.specs = list(map(lambda x: x.strip(), self.soup.find("div", GAME_SELECTORS["specs"]).text.split('\n')))
 
     # Retrieve results in JSON
     def as_json(self):
@@ -94,3 +94,6 @@ class PS4Game:
         }
 
         return json.dumps(description, ensure_ascii=False, indent=4)
+
+
+print(PS4Game(alias='EP0002-CUSA23470_00-CB4STANDARD00001').as_json())

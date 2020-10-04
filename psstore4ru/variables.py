@@ -20,6 +20,18 @@ EXTERNAL = {
     "discounts homepage": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-PRICEDROPSCHI/%d?platform=ps4',
 }
 
+SPECS = {
+    "languages": ['немецкий', 'норвежский', 'финский', 'шведский',
+                          'русский', 'португальский', 'английский', 'итальянский',
+                          'французский', 'испанский', 'арабский', 'польский',
+                          'датский', 'Турецкий', 'нидерландский', 'китайский (упрощ. письмо)'],
+
+    "genres": ['Боевик', 'Приключения', 'Гонки', 'Аркада', 'Ужасы', 'Пазлы',
+                       'Симуляторы', 'Спорт', 'Семейные', 'Казуальные',
+                       'Ролевые игры', 'Тусовка', 'Стратегия',
+                       'Единоборства', 'Шутер', 'MUSIC/RHYTHM', 'Уникальные']
+}
+
 SELECTORS = {
     "lp full": {'class': 'paginator-control__end'},
     "lp new games": {'class': 'paginator-control__end'},
@@ -28,6 +40,22 @@ SELECTORS = {
     "ps plus container": {'class': 'grid-cell--game'},
     "ps plus link": {'class': 'internal-app-link'},
 }
+
+GAME_SELECTORS = {
+    "cover": "div.large-3 > div.pdp__"
+             "thumbnail-img > div.product-image > "
+             "div.product-image__img > "
+             "div.product-image__img--main > img",
+    "title": {"class": "pdp__title"},
+    "publisher": {"class": "provider-info__text"},
+    "category": {"class": "provider-info__list-item"},
+    "price": {"class": "price-display__price"},
+    "previous price":  {"class": "price-display__strikethrough"},
+    "psplus discount": {"class": "price-display__price__label"},
+    "specs": {"class": "tech-specs__pivot-menus"},
+    "description": {"class": "pdp__description"},
+}
+
 
 PATTERNS = {
     "lp full": re.compile('\/(\d{3})\?'),
