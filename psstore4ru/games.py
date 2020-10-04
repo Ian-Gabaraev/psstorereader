@@ -7,6 +7,10 @@ from bs4 import BeautifulSoup
 
 class PS4Game:
     def __init__(self, url: str = None, alias: str = None):
+        """
+        :param url: https://store.playstation.com/ru-ru/product/EP0002-CUSA23470_00-CB4STANDARD00001
+        :param alias: EP0002-CUSA23470_00-CB4STANDARD00001
+        """
         self.url = url if url else f"{EXTERNAL['product']}{alias}"
         self.languages = SPECS["languages"]
         self.genres = SPECS["genres"]
@@ -41,36 +45,29 @@ class PS4Game:
         return self.soup.find("div", SELECTORS["description"]).text or ""
 
     def __get_language(self):
-        return set(filter(lambda l: l in self.languages, self.specs))
+        return list(set(filter(lambda l: l in self.languages, self.specs))) or []
 
     def __get_genre(self):
-        return set(filter(lambda g: g in self.genres, self.specs)) or None
+        return list(set(filter(lambda g: g in self.genres, self.specs))) or []
 
     def __get_size(self):
         return " ".join(self.specs[self.specs.index('Размер файла'):]) or None
+
+    def __get_age(self):
+        img_tag = self.soup.find('img', {'class': 'content-rating__rating-img'})
+        src_attribute = re.search(r'/(\d+)\.(png|jpg|svg)', img_tag['src'])
+        return int(src_attribute.group(1)) or 0
+
+    def __get_screenshots(self):
+        api_url = re.sub(r'\/image\?.*', '', self.cover)
+        json_data = requests.get(api_url).json()
+        return [element["url"] for element in json_data["mediaList"]["screenshots"]] or []
 
     def __load_page(self):
         response = requests.get(self.url.encode("utf-8").decode("utf-8-sig"))
         html = response.content
         self.soup = BeautifulSoup(html, features='html.parser')
         self.specs = list(map(lambda x: x.strip(), self.soup.find("div", SELECTORS["specs"]).text.split('\n')))
-
-    def get_specs(self):
-
-        if self.cover:
-            try:
-                api_url = re.sub('\/image\?.*', '', self.cover)
-                json_data = requests.get(api_url).json()
-                self.screenshots = [element["url"] for element in json_data["mediaList"]["screenshots"]]
-            except KeyError:
-                pass
-
-        try:
-            img_tag = soup.find('img', {'class': 'content-rating__rating-img'})
-            src_attribute = re.search('/(\d+)\.(png|jpg|svg)', img_tag['src'])
-            self.age = int(src_attribute.group(1))
-        except Exception:
-            pass
 
     # Retrieve results in JSON
     def as_json(self):
@@ -87,19 +84,13 @@ class PS4Game:
                 "on sale": True if self.__get_former_price() else False,
                 "PS Plus discount": self.__get_ps_plus(),
                 "size": self.__get_size(),
-                "age limit": self.age,
+                "age limit": self.__get_age(),
                 "description": self.__get_description(),
                 "cover": self.__get_cover(),
-                "screenshots": self.screenshots,
+                "language": self.__get_language(),
+                "genre": self.__get_genre(),
+                "screenshots": self.__get_screenshots(),
             }
         }
 
-        if self.lang is not None:
-            description['details']['language'] = list(self.lang)
-        else:
-            description['details']['language'] = self.lang
-        if self.genre is not None:
-            description['details']['genre'] = list(self.genre)
-        else:
-            description['details']['genre'] = self.genre
         return json.dumps(description, ensure_ascii=False, indent=4)
