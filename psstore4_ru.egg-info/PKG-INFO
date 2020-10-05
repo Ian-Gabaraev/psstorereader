@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: psstore4-ru
+Version: 0.0.4
+Summary: Play Station 4 Store Russian Python Interface
+Home-page: https://github.com/Ian-Gabaraev/psstorereader
+Author: Ian Gabaraev
+Author-email: hrattisianees@gmail.com
+License: UNKNOWN
+Description: **Python interface for PlayStation4 Store Russia**
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
