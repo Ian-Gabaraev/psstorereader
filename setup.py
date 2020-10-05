@@ -18,5 +18,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+       'requests',
+       'bs4',
+    ],
     python_requires='>=3.6',
 )
