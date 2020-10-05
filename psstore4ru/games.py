@@ -2,7 +2,7 @@ import requests
 import re
 import json
 import yaml
-from variables import SPECS, GAME_SELECTORS, EXTERNAL
+from .variables import SPECS, GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
 from dicttoxml import dicttoxml
 
