@@ -1,8 +1,10 @@
 import requests
 import re
 import json
-from .variables import SPECS, GAME_SELECTORS, EXTERNAL
+import yaml
+from variables import SPECS, GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
+from dicttoxml import dicttoxml
 
 
 class PS4Game:
@@ -88,25 +90,13 @@ class PS4Game:
         self.soup = BeautifulSoup(html, features='html.parser')
         self.specs = list(map(lambda x: x.strip(), self.soup.find("div", GAME_SELECTORS["specs"]).text.split('\n')))
 
-    def as_yaml(self):
+    def __make_payload(self):
         """
-        Return game info as YAML
-        """
-        pass
-
-    def as_xml(self):
-        """
-        Return game info as XML
-        """
-        pass
-
-    def as_json(self):
-        """
-        Return game info as JSON string
+        Returns a dict of game specs
         """
         self.__load_page()
 
-        description = {
+        return {
             "title": self.__get_title(),
             "link": self.url,
             "details": {
@@ -126,4 +116,25 @@ class PS4Game:
             }
         }
 
-        return json.dumps(description, ensure_ascii=False, indent=4)
+    def as_yaml(self):
+        """
+        Return game info as YAML
+        """
+        return yaml.dump([self.__make_payload()], allow_unicode=True)
+
+    def as_xml(self):
+        """
+        Return game info as XML
+        """
+        pass
+
+    def as_json(self):
+        """
+        Return game info as JSON string
+        """
+        return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
+
+
+print(
+    PS4Game(alias='EP1018-CUSA02010_00-ANNIVERSARYEDTIO').as_xml()
+)

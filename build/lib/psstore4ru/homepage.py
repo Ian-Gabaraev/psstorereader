@@ -1,6 +1,6 @@
 import threading
-from utils import Helpers
-from variables import EXTERNAL, SELECTORS, PATTERNS
+from .utils import Helpers
+from .variables import EXTERNAL, SELECTORS, PATTERNS
 
 
 class PS4StoreRussia:
