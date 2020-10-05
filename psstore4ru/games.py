@@ -133,8 +133,3 @@ class PS4Game:
         Return game info as JSON string
         """
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
-
-
-print(
-    PS4Game(alias='EP1018-CUSA02010_00-ANNIVERSARYEDTIO').as_xml()
-)
