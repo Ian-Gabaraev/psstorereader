@@ -10,18 +10,6 @@ EXTERNAL = {
     "all": 'https://store.playstation.com/ru-ru/category/44d8bb20-653e-431e-8ad0-c0a365f68d2f/%d',
 }
 
-SPECS = {
-    "languages": ['немецкий', 'норвежский', 'финский', 'шведский',
-                          'русский', 'португальский', 'английский', 'итальянский',
-                          'французский', 'испанский', 'арабский', 'польский',
-                          'датский', 'Турецкий', 'нидерландский', 'китайский (упрощ. письмо)'],
-
-    "genres": ['Боевик', 'Приключения', 'Гонки', 'Аркада', 'Ужасы', 'Пазлы',
-                       'Симуляторы', 'Спорт', 'Семейные', 'Казуальные',
-                       'Ролевые игры', 'Тусовка', 'Стратегия',
-                       'Единоборства', 'Шутер', 'MUSIC/RHYTHM', 'Уникальные']
-}
-
 SELECTORS = {
     "lp full": {'class': 'paginator-control__end'},
     "lp new games": {'class': 'paginator-control__end'},
@@ -53,10 +41,12 @@ GAME_SELECTORS = {
 
 }
 
-
-PATTERNS = {
-    "lp full": re.compile('\/(\d{3})\?'),
-    "lp new games": re.compile('\/(\d{1})\?'),
-    "lp discounts": re.compile('\/(\d{2})\?'),
-    "lp top sellers": re.compile('\/(\d{1})'),
-}
+HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept-Language": "en-RU,en-GB,en-US;q=0.9,en;q=0.8",
+    "Dnt": "1",
+    "Host": "store.playstation.com",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36",
+  }

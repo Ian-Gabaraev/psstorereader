@@ -2,7 +2,7 @@ import requests
 import re
 import json
 import yaml
-from variables import SPECS, GAME_SELECTORS, EXTERNAL
+from variables import GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
 
 
@@ -13,8 +13,6 @@ class PS4Game:
         :param alias: EP0002-CUSA23470_00-CB4STANDARD00001
         """
         self.url = url if url else f"{EXTERNAL['product']}{alias}"
-        self.languages = SPECS["languages"]
-        self.genres = SPECS["genres"]
         self.soup = None
         self.specs = []
 

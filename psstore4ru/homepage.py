@@ -1,7 +1,7 @@
-import threading
 import json
 from utils import Helpers
-from variables import EXTERNAL, SELECTORS, PATTERNS
+from variables import EXTERNAL, SELECTORS
+import datetime
 
 
 class PS4StoreRussia:
@@ -14,7 +14,13 @@ class PS4StoreRussia:
         self.vr_games = set()
         self.threads = []
 
-    def __collect_multipage_links(self, source: str, target: set):
+    @staticmethod
+    def __collect_multi_page_links(source: str, target: set):
+        """
+        Collects all the links from all the pages
+        :param source: page URL to crawl
+        :param target: object to store collected data
+        """
         start_page = 1
         soup = Helpers.get_soup(source % start_page)
         links = (link for link in soup.find_all('a', SELECTORS["collect ng"]))
@@ -24,32 +30,30 @@ class PS4StoreRussia:
                 target.add(json.loads(link['data-telemetry-meta'])['id'])
 
             start_page += 1
-            soup = Helpers.get_soup(EXTERNAL["latest"] % start_page)
+            soup = Helpers.get_soup(source % start_page)
             links = soup.find_all('a', SELECTORS["collect ng"])
 
-    def __collect_all_catalogue_links(self, number):
+    def __collect_all_catalogue_links(self, number: int):
+        """
+        Collects all the links from a page
+        :param number: page number
+        """
         soup = Helpers.get_soup(EXTERNAL["all"] % number)
-        for link in soup.find_all('a', SELECTORS["collect full"]):
-            self.links.add(EXTERNAL["host"] + link['href'])
+        links = (link for link in soup.find_all('a', SELECTORS["collect ng"]))
 
-    def __run_threads(self):
-        for i in range(1, self.__get_full_catalogue_last_page_number() + 1):
-            worker = threading.Thread(target=self.__collect_all_catalogue_links, args=(i,))
-            self.threads.append(worker)
-        for thread in self.threads:
-            thread.start()
-        for thread in self.threads:
-            thread.join()
+        for link in links:
+            self.links.add(json.loads(link['data-telemetry-meta'])['id'])
 
-    def get_all_links(self):
-        self.__run_threads()
-        return self.links
+    def collect_all_links(self):
+        self.__collect_multi_page_links(source=EXTERNAL['all'], target=self.links)
+
+        return len(self.links)
 
     def get_soon_tbr_games(self) -> set:
         """
         Retrieve games IDs from "Soon to be released"
         """
-        self.__collect_multipage_links(source=EXTERNAL['soon'], target=self.soon_tbr_games)
+        self.__collect_multi_page_links(source=EXTERNAL['soon'], target=self.soon_tbr_games)
 
         return self.soon_tbr_games
 
@@ -57,7 +61,7 @@ class PS4StoreRussia:
         """
         Retrieve games IDs from "Free to play"
         """
-        self.__collect_multipage_links(source=EXTERNAL['f2p'], target=self.f2p_games)
+        self.__collect_multi_page_links(source=EXTERNAL['f2p'], target=self.f2p_games)
 
         return self.f2p_games
 
@@ -65,7 +69,7 @@ class PS4StoreRussia:
         """
         Retrieve games IDs from "VR"
         """
-        self.__collect_multipage_links(source=EXTERNAL['vr'], target=self.vr_games)
+        self.__collect_multi_page_links(source=EXTERNAL['vr'], target=self.vr_games)
 
         return self.vr_games
 
@@ -73,11 +77,13 @@ class PS4StoreRussia:
         """
         Retrieve games IDs from "New"
         """
-        self.__collect_multipage_links(source=EXTERNAL['latest'], target=self.new_games_links)
+        self.__collect_multi_page_links(source=EXTERNAL['latest'], target=self.new_games_links)
 
         return self.new_games_links
 
 
+started = datetime.datetime.now()
+print(PS4StoreRussia().get_soon_tbr_games())
 print(
-    PS4StoreRussia().get_vr_games_links()
+    datetime.datetime.now()-started
 )
