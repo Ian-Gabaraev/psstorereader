@@ -1,7 +1,6 @@
 import json
 from utils import Helpers
 from variables import EXTERNAL, SELECTORS
-import datetime
 
 
 class PS4StoreRussia:
@@ -80,10 +79,3 @@ class PS4StoreRussia:
         self.__collect_multi_page_links(source=EXTERNAL['latest'], target=self.new_games_links)
 
         return self.new_games_links
-
-
-started = datetime.datetime.now()
-print(PS4StoreRussia().get_soon_tbr_games())
-print(
-    datetime.datetime.now()-started
-)
