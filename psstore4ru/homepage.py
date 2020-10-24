@@ -46,7 +46,7 @@ class PS4StoreRussia:
     def collect_all_links(self):
         self.__collect_multi_page_links(source=EXTERNAL['all'], target=self.links)
 
-        return len(self.links)
+        return self.links
 
     def get_soon_tbr_games(self) -> set:
         """

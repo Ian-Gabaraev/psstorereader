@@ -15,4 +15,7 @@ class Helpers:
 
 async def get_async_soup(url, session):
     async with session.get(url) as response:
-        return await response.read()
+        content = await response.read()
+        html = content
+        soup = BeautifulSoup(html, features='html.parser')
+        return [soup, url]
