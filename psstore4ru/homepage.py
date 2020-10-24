@@ -1,6 +1,8 @@
 import threading
-from .utils import Helpers
-from .variables import EXTERNAL, SELECTORS, PATTERNS
+import json
+import sys
+from utils import Helpers
+from variables import EXTERNAL, SELECTORS, PATTERNS
 
 
 class PS4StoreRussia:
@@ -49,23 +51,18 @@ class PS4StoreRussia:
         result = PATTERNS["lp discounts"].search(end['href'])
         return int(result[1])
 
-    def __collect_soon_tbr_games(self):
-        lp = self.__get_soon_tbr_last_page_number()
-        if lp:
-            for i in range(1, lp + 1):
-                soup = Helpers.get_soup(EXTERNAL["soon"] % i)
-                for link in soup.find_all('a', SELECTORS["collect ng"]):
-                    self.soon_tbr_games.add(EXTERNAL["host"] + link['href'])
-        else:
-            soup = Helpers.get_soup(self.soon)
-            for link in soup.find_all('a', SELECTORS["collect ng"]):
-                self.soon_tbr_games.add(EXTERNAL["host"] + link['href'])
+    def __collect_multipage_links(self, source: str, target: set):
+        start_page = 1
+        soup = Helpers.get_soup(source % start_page)
+        links = (link for link in soup.find_all('a', SELECTORS["collect ng"]))
 
-    def __collect_f2p_games_links(self):
-        for i in range(1, self.__get_free_to_play_last_page_number() + 1):
-            soup = Helpers.get_soup(EXTERNAL["ftp"] % i)
-            for link in soup.find_all('a', SELECTORS["collect ng"]):
-                self.f2p_games.add(EXTERNAL["host"] + link['href'])
+        while links:
+            for link in links:
+                target.add(json.loads(link['data-telemetry-meta'])['id'])
+
+            start_page += 1
+            soup = Helpers.get_soup(EXTERNAL["latest"] % start_page)
+            links = soup.find_all('a', SELECTORS["collect ng"])
 
     def __collect_top_sellers_links(self):
         for i in range(1, self.__get_top_sellers_catalogue_last_page_number() + 1):
@@ -95,12 +92,6 @@ class PS4StoreRussia:
         result = PATTERNS["lp new games"].search(end['href'])
         return int(result[1])
 
-    def __collect_new_games_links(self):
-        for i in range(1, self.__get_new_games_last_page_number() + 1):
-            soup = Helpers.get_soup(EXTERNAL["latest"] % i)
-            for link in soup.find_all('a', SELECTORS["collect ng"]):
-                self.new_games_links.add(EXTERNAL["host"] + link['href'])
-
     def __collect_all_catalogue_links(self, number):
         soup = Helpers.get_soup(EXTERNAL["all"] % number)
         for link in soup.find_all('a', SELECTORS["collect full"]):
@@ -127,23 +118,35 @@ class PS4StoreRussia:
         self.__run_threads()
         return self.links
 
-    def get_all_new_games_links(self):
-        self.__collect_new_games_links()
-        return self.new_games_links
-
     def get_top_sellers(self):
         self.__collect_top_sellers_links()
         return self.top_sellers
 
-    def get_soon_tbr_games(self):
-        self.__collect_soon_tbr_games()
+    def get_soon_tbr_games(self) -> set:
+        """
+        Retrieve games IDs from "Soon to be released"
+        """
+        self.__collect_multipage_links(source=EXTERNAL['soon'], target=self.soon_tbr_games)
+
         return self.soon_tbr_games
 
-    def get_f2p_games(self):
-        self.__collect_f2p_games_links()
+    def get_f2p_games_links(self) -> set:
+        """
+        Retrieve games IDs from "Free to play"
+        """
+        self.__collect_multipage_links(source=EXTERNAL['f2p'], target=self.f2p_games)
+
         return self.f2p_games
+
+    def get_all_new_games_links(self) -> set:
+        """
+        Retrieve games IDs from "New"
+        """
+        self.__collect_multipage_links(source=EXTERNAL['latest'], target=self.new_games_links)
+
+        return self.new_games_links
 
 
 print(
-    PS4StoreRussia().get_f2p_games()
+    PS4StoreRussia().get_soon_tbr_games()
 )

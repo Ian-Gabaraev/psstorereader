@@ -209,6 +209,7 @@ class PS4Game:
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
 
 
+print(PS4Game(alias='EP3717-CUSA23986_00-CARTO0000000000E').as_yaml())
 print(PS4Game(alias='EP1464-CUSA07669_00-FORTNITETESTING1').as_yaml())
 print(PS4Game(alias='EP9001-CUSA02168_00-GTSPORT000000000').as_yaml())
 print(PS4Game(alias='EP4497-CUSA16579_00-0000000000000001').as_yaml())
