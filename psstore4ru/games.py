@@ -107,7 +107,7 @@ class PS4Game:
         return True if match else False
 
     def __get_preorder(self) -> bool:
-        match = self.soup.find("span", GAME_SELECTORS["preorder"])
+        match = self.soup.find("button", GAME_SELECTORS["preorder"])
 
         return True if match else False
 
@@ -211,3 +211,4 @@ class PS4Game:
 
 print(PS4Game(alias='EP1464-CUSA07669_00-FORTNITETESTING1').as_yaml())
 print(PS4Game(alias='EP9001-CUSA02168_00-GTSPORT000000000').as_yaml())
+print(PS4Game(alias='EP4497-CUSA16579_00-0000000000000001').as_yaml())
