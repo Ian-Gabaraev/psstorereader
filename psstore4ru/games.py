@@ -2,7 +2,7 @@ import requests
 import re
 import json
 import yaml
-from .variables import SPECS, GAME_SELECTORS, EXTERNAL
+from variables import SPECS, GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
 
 
@@ -19,6 +19,7 @@ class PS4Game:
         self.specs = []
 
     def __get_title(self):
+
         return self.soup.find("h1", GAME_SELECTORS["title"]).text
 
     def __get_publisher(self):
@@ -38,23 +39,35 @@ class PS4Game:
         except AttributeError:
             return ""
 
-    def __get_voice(self):
+    def __get_voice(self) -> list:
         try:
-            return self.soup.find("dd", GAME_SELECTORS["voice"]).text
+            voices = self.soup.find("dd", GAME_SELECTORS["voice"]).text
         except AttributeError:
-            return ""
+            return []
+        else:
+            return [
+                voice.lstrip() for voice in voices.split(',')
+            ]
 
-    def __get_subtitles(self):
+    def __get_subtitles(self) -> list:
         try:
-            return self.soup.find("dd", GAME_SELECTORS["subtitles"]).text
+            subtitles = self.soup.find("dd", GAME_SELECTORS["subtitles"]).text
         except AttributeError:
-            return ""
+            return []
+        else:
+            return [
+                subtitle.lstrip() for subtitle in subtitles.split(',')
+            ]
 
-    def __get_genres(self):
+    def __get_genres(self) -> list:
         try:
-            return self.soup.find("dd", GAME_SELECTORS["genres"]).text
+            genres = self.soup.find("dd", GAME_SELECTORS["genres"]).text
         except AttributeError:
-            return ""
+            return []
+        else:
+            return [
+                genre.lstrip() for genre in genres.split(',')
+            ]
 
     def __get_platforms(self):
         try:
@@ -68,24 +81,34 @@ class PS4Game:
         except AttributeError:
             return ""
 
-    def __get_in_game_purchases(self):
+    def __get_in_game_purchases(self) -> bool:
         match = self.soup.find("span", GAME_SELECTORS["in_game_purchases"])
+
         return True if match else False
 
-    def __get_online_gaming(self):
+    def __get_online_gaming(self) -> bool:
         match = self.soup.find("span", GAME_SELECTORS["online_gaming"])
-        return True if match else False
 
-    def __get_ps_plus_required(self):
+        return True if (match or self.__get_ps_plus_required()) else False
+
+    def __get_ps_plus_required(self) -> bool:
         match = self.soup.find("span", GAME_SELECTORS["ps_plus_required"])
+
         return True if match else False
 
-    def __get_ps_pro_support(self):
-        match = self.soup.find("span", GAME_SELECTORS["ps_pro_support"])
+    def __get_ps_pro_tuned(self) -> bool:
+        match = self.soup.find("span", GAME_SELECTORS["ps_pro_tuned"])
+
         return True if match else False
 
-    def __get_preorder(self):
+    def __get_ps_vr_support(self) -> bool:
+        match = self.soup.find("span", GAME_SELECTORS["ps_vr_support"])
+
+        return True if match else False
+
+    def __get_preorder(self) -> bool:
         match = self.soup.find("span", GAME_SELECTORS["preorder"])
+
         return True if match else False
 
     def __get_cover_picture(self):
@@ -101,16 +124,12 @@ class PS4Game:
             return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["price"]).text))
         except AttributeError:
             return 0
+        except ValueError:
+            return 0
 
     def __get_original_price(self):
         try:
             return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["original_price"]).text))
-        except AttributeError:
-            return 0
-
-    def __get_former_price(self):
-        try:
-            return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["previous price"]).text))
         except AttributeError:
             return 0
 
@@ -152,7 +171,7 @@ class PS4Game:
                 },
                 "platforms": {
                     "supported": self.__get_platforms(),
-                    "ps4pro": self.__get_ps_pro_support()
+                    "ps4pro": self.__get_ps_pro_tuned()
                 },
                 "pricing": {
                     "final_price": self.__get_price(),
@@ -165,9 +184,9 @@ class PS4Game:
                 "misc": {
                     "in_game_purchases": self.__get_in_game_purchases(),
                     "online": self.__get_online_gaming(),
-                    "ps_plus_required": self.__get_ps_plus_required()
+                    "ps_plus_required": self.__get_ps_plus_required(),
+                    "ps_vr_support": self.__get_ps_vr_support()
                 }
-
             }
         }
 
@@ -190,4 +209,5 @@ class PS4Game:
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
 
 
-print(PS4Game(alias='EP1121-CUSA19036_00-CLOUDPUNK0000001').as_yaml())
+print(PS4Game(alias='EP1464-CUSA07669_00-FORTNITETESTING1').as_yaml())
+print(PS4Game(alias='EP9001-CUSA02168_00-GTSPORT000000000').as_yaml())
