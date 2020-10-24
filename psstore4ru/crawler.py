@@ -1,4 +1,5 @@
 import requests
+import uuid
 import re
 import json
 import yaml
@@ -9,6 +10,7 @@ from bs4 import BeautifulSoup
 import asyncio
 from aiohttp import ClientSession
 from aiohttp import TCPConnector
+from variables import HEADERS
 
 
 class PS4Game:
@@ -224,45 +226,32 @@ class PS4Game:
 
 
 async def launch():
-    links = PS4StoreRussia().collect_all_links()
     tasks = []
 
-    sem = asyncio.Semaphore(10)
-    async with sem:
-        async with ClientSession(connector=TCPConnector(ssl=False)) as session:
-            for link in links:
-                task = asyncio.ensure_future(
-                    get_async_soup(
+    f = open("links.json", "r")
+    content = f.read()
+    js = dict(json.loads(content))
+    links = list(js.values())[:1]
+
+    async with ClientSession(headers=HEADERS, connector=TCPConnector(ssl=False)) as session:
+        for link in links:
+            task = asyncio.ensure_future(
+                get_async_soup(
                         session=session, url=f"{EXTERNAL['product']}{link}"
-                    )
                 )
-                tasks.append(task)
+            )
+            tasks.append(task)
 
-            soups = await asyncio.gather(*tasks)
+        soups = await asyncio.gather(*tasks)
 
-            f = open("games.json", "a")
+        f = open("games.json", "a")
+        f.write('{')
 
-            f.write('{')
+        for index, soup in enumerate(soups):
+            string = PS4Game(alias=soup[1], soup=soup[0]).as_json()
+            f.write(f'"{str(uuid.uuid4())}": {string},')
+        f.write('}')
 
-            for index, soup in enumerate(soups):
-                string = PS4Game(alias=soup[1], soup=soup[0]).as_json()
-                f.write(f'"{index}": {string},')
-
-            f.write('}')
-
-
-# loop = asyncio.get_event_loop()
-# future = asyncio.ensure_future(launch())
-# loop.run_until_complete(future)
-
-
-links = PS4StoreRussia().collect_all_links()
-
-f = open("links.json", "a")
-
-f.write('{')
-
-for index, soup in enumerate(links):
-    f.write(f'"{index}": "{soup}",')
-
-f.write('}')
+loop = asyncio.get_event_loop()
+future = asyncio.ensure_future(launch())
+loop.run_until_complete(future)
