@@ -3,21 +3,11 @@ import re
 EXTERNAL = {
     "host": 'https://store.playstation.com',
     "product": 'https://store.playstation.com/ru-ru/product/',
-    "ftp home": 'https://store.playstation.com/ru-ru/category/5c30b111-b867-4037-8f42-5b3db18d8e20/1',
+    "vr": 'https://store.playstation.com/ru-ru/category/95239ca7-2dcf-43d9-8d4b-b7672ee9304a/%d',
     "f2p": 'https://store.playstation.com/ru-ru/category/5c30b111-b867-4037-8f42-5b3db18d8e20/%d',
-    "soon home": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-COMINGSOON/1',
     "soon": 'https://store.playstation.com/ru-ru/category/be9cf690-90de-4772-b09e-b327fc82c5c5/%d',
-    "top sellers home": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-GAMETOPSELLERS/1',
-    "top sellers": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-GAMETOPSELLERS/%d',
-    "store_homepage":
-        'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-PS4CAT/1?platform=ps4',
-    "new_games_homepage":
-        'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-GAMELATEST/1?platform=ps4',
     "latest": 'https://store.playstation.com/ru-ru/category/12a53448-199e-459b-956d-074feeed2d7d/%d',
-    "all": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-PS4CAT/%d?platform=ps4',
-    "ps plus": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-PLUSINSTANTGAME/1',
-    "discounts": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-PRICEDROPSCHI/1?platform=ps4',
-    "discounts homepage": 'https://store.playstation.com/ru-ru/grid/STORE-MSF75508-PRICEDROPSCHI/%d?platform=ps4',
+    "all": 'https://store.playstation.com/ru-ru/category/44d8bb20-653e-431e-8ad0-c0a365f68d2f/%d',
 }
 
 SPECS = {

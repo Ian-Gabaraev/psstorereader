@@ -204,7 +204,7 @@ class PS4Game:
 
     def as_json(self):
         """
-        Return game info as JSON string
+        Return game info as JSON
         """
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
 
