@@ -19,25 +19,92 @@ class PS4Game:
         self.specs = []
 
     def __get_title(self):
-        return self.soup.find("h2", GAME_SELECTORS["title"]).text
+        return self.soup.find("h1", GAME_SELECTORS["title"]).text
 
     def __get_publisher(self):
         try:
-            publisher = self.soup.find("h5", GAME_SELECTORS["publisher"]).text
+            publisher = self.soup.find("div", GAME_SELECTORS["publisher"]).text
         except AttributeError:
             return ""
         else:
             return "" if '\n' in publisher else publisher
 
     def __get_category(self):
+        return "Предзаказ" if self.__get_preorder() else "Обычный"
+
+    def __get_release_date(self):
         try:
-            return self.soup.find("span", GAME_SELECTORS["category"]).text
+            return self.soup.find("dd", GAME_SELECTORS["release"]).text
         except AttributeError:
             return ""
 
+    def __get_voice(self):
+        try:
+            return self.soup.find("dd", GAME_SELECTORS["voice"]).text
+        except AttributeError:
+            return ""
+
+    def __get_subtitles(self):
+        try:
+            return self.soup.find("dd", GAME_SELECTORS["subtitles"]).text
+        except AttributeError:
+            return ""
+
+    def __get_genres(self):
+        try:
+            return self.soup.find("dd", GAME_SELECTORS["genres"]).text
+        except AttributeError:
+            return ""
+
+    def __get_platforms(self):
+        try:
+            return self.soup.find("dd", GAME_SELECTORS["platforms"]).text
+        except AttributeError:
+            return ""
+
+    def __get_rating(self):
+        try:
+            return self.soup.find("img", GAME_SELECTORS["rating"])['alt']
+        except AttributeError:
+            return ""
+
+    def __get_in_game_purchases(self):
+        match = self.soup.find("span", GAME_SELECTORS["in_game_purchases"])
+        return True if match else False
+
+    def __get_online_gaming(self):
+        match = self.soup.find("span", GAME_SELECTORS["online_gaming"])
+        return True if match else False
+
+    def __get_ps_plus_required(self):
+        match = self.soup.find("span", GAME_SELECTORS["ps_plus_required"])
+        return True if match else False
+
+    def __get_ps_pro_support(self):
+        match = self.soup.find("span", GAME_SELECTORS["ps_pro_support"])
+        return True if match else False
+
+    def __get_preorder(self):
+        match = self.soup.find("span", GAME_SELECTORS["preorder"])
+        return True if match else False
+
+    def __get_cover_picture(self):
+        try:
+            cover_picture_url = self.soup.select(GAME_SELECTORS["cover_picture"])[0]['src']
+        except AttributeError:
+            return ""
+        else:
+            return re.sub(pattern=r'\?.*', repl='', string=cover_picture_url)
+
     def __get_price(self):
         try:
-            return int(re.sub(r'\D', '', self.soup.find("h3", GAME_SELECTORS["price"]).text))
+            return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["price"]).text))
+        except AttributeError:
+            return 0
+
+    def __get_original_price(self):
+        try:
+            return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["original_price"]).text))
         except AttributeError:
             return 0
 
@@ -53,41 +120,16 @@ class PS4Game:
         except AttributeError:
             return ""
 
-    def __get_cover(self):
-        cover_picture_url = self.soup.select(GAME_SELECTORS["cover"])
-        return cover_picture_url[0]['src'] or ""
-
     def __get_description(self):
         try:
-            return self.soup.find("div", GAME_SELECTORS["description"]).text
+            return self.soup.find("p", GAME_SELECTORS["description"]).text
         except AttributeError:
             return ""
-
-    def __get_language(self):
-        return list(set(filter(lambda l: l in self.languages, self.specs)))
-
-    def __get_genre(self):
-        return list(set(filter(lambda g: g in self.genres, self.specs)))
-
-    def __get_size(self):
-        return " ".join(self.specs[self.specs.index('Размер файла'):]) or None
-
-    def __get_age(self):
-        img_tag = self.soup.find('img', {'class': 'content-rating__rating-img'})
-        src_attribute = re.search(r'/(\d+)\.(png|jpg|svg)', img_tag['src'])
-        return int(src_attribute.group(1)) or 0
-
-    def __get_screenshots(self):
-        if self.__get_cover():
-            api_url = re.sub(r'\/image\?.*', '', self.__get_cover())
-            json_data = requests.get(api_url).json()
-            return [element["url"] for element in json_data["mediaList"]["screenshots"]] or []
 
     def __load_page(self):
         response = requests.get(self.url.encode("utf-8").decode("utf-8-sig"))
         html = response.content
         self.soup = BeautifulSoup(html, features='html.parser')
-        self.specs = list(map(lambda x: x.strip(), self.soup.find("div", GAME_SELECTORS["specs"]).text.split('\n')))
 
     def __make_payload(self):
         """
@@ -98,20 +140,34 @@ class PS4Game:
         return {
             "title": self.__get_title(),
             "link": self.url,
+            "cover": self.__get_cover_picture(),
             "details": {
-                "publisher": self.__get_publisher(),
-                "category": self.__get_category(),
-                "price": self.__get_price(),
-                "previous price": self.__get_former_price(),
-                "on sale": True if self.__get_former_price() else False,
-                "PS Plus discount": self.__get_ps_plus(),
-                "size": self.__get_size(),
-                "age limit": self.__get_age(),
-                "description": self.__get_description(),
-                "cover": self.__get_cover(),
-                "language": self.__get_language(),
-                "genre": self.__get_genre(),
-                "screenshots": self.__get_screenshots(),
+                "about": {
+                    "description": self.__get_description(),
+                    "genres": self.__get_genres(),
+                    "ages": self.__get_rating(),
+                    "publisher": self.__get_publisher(),
+                    "release_date": self.__get_release_date(),
+                    "category": self.__get_category(),
+                },
+                "platforms": {
+                    "supported": self.__get_platforms(),
+                    "ps4pro": self.__get_ps_pro_support()
+                },
+                "pricing": {
+                    "final_price": self.__get_price(),
+                    "original_price": self.__get_original_price()
+                },
+                "language": {
+                    "audio": self.__get_voice(),
+                    "subtitles": self.__get_subtitles()
+                },
+                "misc": {
+                    "in_game_purchases": self.__get_in_game_purchases(),
+                    "online": self.__get_online_gaming(),
+                    "ps_plus_required": self.__get_ps_plus_required()
+                }
+
             }
         }
 
@@ -132,3 +188,6 @@ class PS4Game:
         Return game info as JSON string
         """
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
+
+
+print(PS4Game(alias='EP1121-CUSA19036_00-CLOUDPUNK0000001').as_yaml())

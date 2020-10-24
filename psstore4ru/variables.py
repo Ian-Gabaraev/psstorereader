@@ -42,18 +42,29 @@ SELECTORS = {
 }
 
 GAME_SELECTORS = {
-    "cover": "div.large-3 > div.pdp__"
-             "thumbnail-img > div.product-image > "
-             "div.product-image__img > "
-             "div.product-image__img--main > img",
-    "title": {"class": "pdp__title"},
-    "publisher": {"class": "provider-info__text"},
+    "title": {"data-qa": "mfe-game-title#name"},
+    "publisher": {"data-qa": "mfe-game-title#publisher"},
     "category": {"class": "provider-info__list-item"},
-    "price": {"class": "price-display__price"},
+    "price": {"data-qa": "mfeCtaMain#offer0#finalPrice"},
+    "original_price": {"data-qa": "mfeCtaMain#offer0#originalPrice"},
     "previous price":  {"class": "price-display__strikethrough"},
     "psplus discount": {"class": "price-display__price__label"},
     "specs": {"class": "tech-specs__pivot-menus"},
-    "description": {"class": "pdp__description"},
+
+    "voice": {"data-qa": "gameInfo#releaseInformation#voice-value"},
+    "subtitles": {"data-qa": "gameInfo#releaseInformation#subtitles-value"},
+    "genres": {"data-qa": "gameInfo#releaseInformation#genre-value"},
+    "platforms": {"data-qa": "gameInfo#releaseInformation#platform-value"},
+    "release": {"data-qa": "gameInfo#releaseInformation#releaseDate-value"},
+    "description": {"data-qa": "mfe-game-overview#description"},
+    "rating": {"data-qa": "mfe-content-rating#ratingImage#image"},
+    "in_game_purchases": {"class": "psw-icon--in-game-purchases"},
+    "ps_pro_support": {"class": "psw-icon--ps4"},
+    "online_gaming": {"class": "psw-icon--online-play"},
+    "ps_plus_required": {"class": "psw-icon--ps-plus-flat"},
+    "preorder": {"data-track-click": "ctaWithPrice:preOrder"},
+    "cover_picture": "div.psw-layer > span.psw-media-frame > img",
+
 }
 
 
