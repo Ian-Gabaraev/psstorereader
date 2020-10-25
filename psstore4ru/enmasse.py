@@ -39,9 +39,9 @@ class EnMasse:
         tasks = []
 
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
-            for i in range(1, iterations+1):
+            for page_number in range(1, iterations+1):
                 task = asyncio.ensure_future(
-                    get_async_soup(session=session, url=source % i)
+                    get_async_soup(session=session, url=source % page_number)
                 )
                 tasks.append(task)
 
