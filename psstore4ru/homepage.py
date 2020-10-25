@@ -42,12 +42,12 @@ class PS4StoreRussia:
         for link in links:
             self.links.add(json.loads(link['data-telemetry-meta'])['id'])
 
-    def collect_all_links(self):
+    def get_all_games_links(self):
         self.__collect_multi_page_links(source=EXTERNAL['all'], target=self.links)
 
         return self.links
 
-    def get_soon_tbr_games(self) -> set:
+    def get_soon_tbr_games_links(self) -> set:
         """
         Retrieve games IDs from "Soon to be released"
         """
