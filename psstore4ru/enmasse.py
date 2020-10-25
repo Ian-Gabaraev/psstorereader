@@ -1,7 +1,7 @@
 import json
 import asyncio
 import aiohttp
-from .utils import Helpers, get_async_soup
+from .utils import get_async_soup
 from .variables import EXTERNAL, SELECTORS
 
 

@@ -84,13 +84,14 @@ class PS4Game:
 
         return True if match else False
 
-    def __get_single_player_mode(self) -> bool:
-        match = self.soup.find_all(string=GAME_SELECTORS["single_player"])
+    def __only_single_player_mode(self) -> bool:
+        match_single_player = self.soup.find_all(string=GAME_SELECTORS["single_player"])
+        match_online_gaming = self.soup.find_all(string=GAME_SELECTORS["online_gaming"])
 
-        return True if match else False
+        return True if (match_single_player and not match_online_gaming) else False
 
     def __get_online_gaming(self) -> bool:
-        online_gaming_supported = (not self.__get_single_player_mode()) or self.__get_ps_plus_required()
+        online_gaming_supported = (not self.__only_single_player_mode()) or self.__get_ps_plus_required()
 
         return True if online_gaming_supported else False
 
@@ -118,6 +119,8 @@ class PS4Game:
         try:
             cover_picture_url = self.soup.select(GAME_SELECTORS["cover_picture"])[0]['src']
         except AttributeError:
+            return ""
+        except IndexError:
             return ""
         else:
             return re.sub(pattern=r'\?.*', repl='', string=cover_picture_url)

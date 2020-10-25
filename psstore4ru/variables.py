@@ -34,7 +34,7 @@ GAME_SELECTORS = {
     "in_game_purchases": {"class": "psw-icon--in-game-purchases"},
     "ps_pro_tuned": {"class": "psw-icon--ps4"},
     "single_player": "Доступна автономная игра",
-    "online_gaming": {"class": "psw-icon--online-play"},
+    "online_gaming": "Возможна игра в сети",
     "ps_plus_required": {"class": "psw-icon--ps-plus-flat"},
     "ps_vr_support": {"class": "psw-icon--psvr-pscamera"},
     "preorder": {"data-track-click": "ctaWithPrice:preOrder"},
