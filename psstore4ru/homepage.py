@@ -11,7 +11,6 @@ class PS4StoreRussia:
         self.f2p_games = set()
         self.soon_tbr_games = set()
         self.vr_games = set()
-        self.threads = []
 
     @staticmethod
     def __collect_multi_page_links(source: str, target: set):
