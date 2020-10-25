@@ -84,10 +84,15 @@ class PS4Game:
 
         return True if match else False
 
-    def __get_online_gaming(self) -> bool:
-        match = self.soup.find("span", GAME_SELECTORS["online_gaming"])
+    def __get_single_player_mode(self) -> bool:
+        match = self.soup.find_all(string=GAME_SELECTORS["single_player"])
 
-        return True if (match or self.__get_ps_plus_required()) else False
+        return True if match else False
+
+    def __get_online_gaming(self) -> bool:
+        online_gaming_supported = (not self.__get_single_player_mode()) or self.__get_ps_plus_required()
+
+        return True if online_gaming_supported else False
 
     def __get_ps_plus_required(self) -> bool:
         match = self.soup.find("span", GAME_SELECTORS["ps_plus_required"])
@@ -205,3 +210,6 @@ class PS4Game:
         Return game info as JSON
         """
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
+
+
+PS4Game(alias='EP0082-CUSA19120_00-0000000000000000').as_json()
