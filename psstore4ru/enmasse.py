@@ -53,7 +53,6 @@ class EnMasse:
     async def get_all_games_links(iterations) -> set:
         """
         Retrieve all games IDs
-        :param iterations: pages to scan
         """
         raw_data = await EnMasse.collect_multi_page_links(
             source=EXTERNAL['all'], iterations=iterations)
@@ -63,8 +62,7 @@ class EnMasse:
     @staticmethod
     async def get_all_soon_tbr_games_links(iterations) -> set:
         """
-        Retrieve games IDs from "Soon to be released"
-        :param iterations: pages to scan
+        Retrieve all games IDs from "Soon to be released"
         """
         raw_data = await EnMasse.collect_multi_page_links(
             source=EXTERNAL['soon'], iterations=iterations)
