@@ -35,7 +35,7 @@ class AsynchronousMethods(unittest.TestCase):
         """
         loop = asyncio.get_event_loop()
         future = asyncio.ensure_future(EnMasse.get_all_f2p_games_links(iterations=3))
-        result = await loop.run_until_complete(future)
+        result = loop.run_until_complete(future)
 
         self.assertTrue(bool(result))
 
