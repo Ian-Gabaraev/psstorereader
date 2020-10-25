@@ -2,7 +2,7 @@ import requests
 import re
 import json
 import yaml
-from variables import GAME_SELECTORS, EXTERNAL
+from .variables import GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
 
 
@@ -16,11 +16,11 @@ class PS4Game:
         self.soup = None
         self.specs = []
 
-    def __get_title(self):
+    def __get_title(self) -> str:
 
         return self.soup.find("h1", GAME_SELECTORS["title"]).text
 
-    def __get_publisher(self):
+    def __get_publisher(self) -> str:
         try:
             publisher = self.soup.find("div", GAME_SELECTORS["publisher"]).text
         except AttributeError:
@@ -28,10 +28,10 @@ class PS4Game:
         else:
             return "" if '\n' in publisher else publisher
 
-    def __get_category(self):
+    def __get_category(self) -> str:
         return "Предзаказ" if self.__get_preorder() else "Обычный"
 
-    def __get_release_date(self):
+    def __get_release_date(self) -> str:
         try:
             return self.soup.find("dd", GAME_SELECTORS["release"]).text
         except AttributeError:
@@ -67,13 +67,13 @@ class PS4Game:
                 genre.lstrip() for genre in genres.split(',')
             ]
 
-    def __get_platforms(self):
+    def __get_platforms(self) -> str:
         try:
             return self.soup.find("dd", GAME_SELECTORS["platforms"]).text
         except AttributeError:
             return ""
 
-    def __get_rating(self):
+    def __get_rating(self) -> str:
         try:
             return self.soup.find("img", GAME_SELECTORS["rating"])['alt']
         except AttributeError:
@@ -109,7 +109,7 @@ class PS4Game:
 
         return True if match else False
 
-    def __get_cover_picture(self):
+    def __get_cover_picture(self) -> str:
         try:
             cover_picture_url = self.soup.select(GAME_SELECTORS["cover_picture"])[0]['src']
         except AttributeError:
@@ -117,7 +117,7 @@ class PS4Game:
         else:
             return re.sub(pattern=r'\?.*', repl='', string=cover_picture_url)
 
-    def __get_price(self):
+    def __get_price(self) -> int:
         try:
             return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["price"]).text))
         except AttributeError:
@@ -125,19 +125,19 @@ class PS4Game:
         except ValueError:
             return 0
 
-    def __get_original_price(self):
+    def __get_original_price(self) -> int:
         try:
             return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["original_price"]).text))
         except AttributeError:
             return 0
 
-    def __get_ps_plus(self):
+    def __get_ps_plus(self) -> str:
         try:
             return self.soup.find("div", GAME_SELECTORS["psplus discount"]).text
         except AttributeError:
             return ""
 
-    def __get_description(self):
+    def __get_description(self) -> str:
         try:
             return self.soup.find("p", GAME_SELECTORS["description"]).text
         except AttributeError:
@@ -188,7 +188,7 @@ class PS4Game:
             }
         }
 
-    def as_yaml(self):
+    def as_yaml(self) -> str:
         """
         Return game info as YAML
         """
@@ -200,7 +200,7 @@ class PS4Game:
         """
         pass
 
-    def as_json(self):
+    def as_json(self) -> str:
         """
         Return game info as JSON
         """

@@ -1,6 +1,6 @@
 import json
-from utils import Helpers
-from variables import EXTERNAL, SELECTORS
+from .utils import Helpers
+from .variables import EXTERNAL, SELECTORS
 
 
 class PS4StoreRussia:
