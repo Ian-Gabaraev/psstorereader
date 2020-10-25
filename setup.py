@@ -20,7 +20,7 @@ setuptools.setup(
     ],
     install_requires=[
        'requests',
-       'bs4',
+       'bs4', 'pyyaml',
     ],
     python_requires='>=3.6',
 )
