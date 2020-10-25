@@ -19,8 +19,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-       'requests',
-       'bs4', 'pyyaml',
+       'requests', 'bs4', 'pyyaml', 'asyncio', 'aiohttp'
     ],
     python_requires='>=3.6',
 )
