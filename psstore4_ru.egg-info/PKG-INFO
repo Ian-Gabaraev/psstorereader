@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: psstore4-ru
-Version: 0.0.5
-Summary: Play Station 4 Store Russian Python Interface
+Version: 1.0.0
+Summary: Play Station Store Russian Python Interface
 Home-page: https://github.com/Ian-Gabaraev/psstorereader
 Author: Ian Gabaraev
 Author-email: hrattisianees@gmail.com

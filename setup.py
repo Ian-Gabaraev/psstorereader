@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="psstore4-ru",
-    version="1.0.0",
+    name="psstore-ru",
+    version="1.0.1",
     author="Ian Gabaraev",
     author_email="hrattisianees@gmail.com",
     description="Play Station Store Russian Python Interface",
