@@ -3,7 +3,6 @@ import uuid
 import re
 import json
 import yaml
-from homepage import PS4StoreRussia
 from utils import get_async_soup
 from variables import GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
@@ -14,24 +13,29 @@ from variables import HEADERS
 
 
 class PS4Game:
-    def __init__(self, url: str = None, alias: str = None, soup=None):
+    def __init__(self, url: str = None, region_code: str = None, soup=None):
         """
         :param url: https://store.playstation.com/ru-ru/product/EP0002-CUSA23470_00-CB4STANDARD00001
-        :param alias: EP0002-CUSA23470_00-CB4STANDARD00001
+        :param region_code: EP0002-CUSA23470_00-CB4STANDARD00001
         """
-        self.url = None
-        self.alias = alias
+        self.url = url
+        self.region_code = region_code
         self.soup = soup
         self.specs = []
 
     def __get_title(self):
-
         try:
             title = self.soup.find("h1", GAME_SELECTORS["title"]).text
         except AttributeError:
             return ""
         else:
             return title
+
+    def __get_region_code(self):
+        if self.region_code:
+            return self.region_code
+        else:
+            return re.sub(pattern=r".*product/", string=self.url, repl="")
 
     def __get_publisher(self):
         try:
@@ -174,7 +178,8 @@ class PS4Game:
 
         return {
             "title": self.__get_title(),
-            "link": self.alias,
+            "uri": self.url,
+            "region_code": self.__get_region_code(),
             "cover": self.__get_cover_picture(),
             "details": {
                 "about": {
@@ -206,6 +211,13 @@ class PS4Game:
             }
         }
 
+    def as_dict(self):
+        """
+        Return game info as python
+        <dict> object
+        """
+        return self.__make_payload()
+
     def as_yaml(self):
         """
         Return game info as YAML
@@ -231,7 +243,7 @@ async def launch():
     f = open("links.json", "r")
     content = f.read()
     js = dict(json.loads(content))
-    links = list(js.values())[:1]
+    links = list(js.values())[:200]
 
     async with ClientSession(headers=HEADERS, connector=TCPConnector(ssl=False)) as session:
         for link in links:
@@ -248,7 +260,7 @@ async def launch():
         f.write('{')
 
         for index, soup in enumerate(soups):
-            string = PS4Game(alias=soup[1], soup=soup[0]).as_json()
+            string = PS4Game(url=soup[1], soup=soup[0]).as_json()
             f.write(f'"{str(uuid.uuid4())}": {string},')
         f.write('}')
 

@@ -7,18 +7,25 @@ from bs4 import BeautifulSoup
 
 
 class PS4Game:
-    def __init__(self, url: str = None, alias: str = None):
+    def __init__(self, url: str = None, region_code: str = None):
         """
         :param url: https://store.playstation.com/ru-ru/product/EP0002-CUSA23470_00-CB4STANDARD00001
-        :param alias: EP0002-CUSA23470_00-CB4STANDARD00001
+        :param region_code: EP0002-CUSA23470_00-CB4STANDARD00001
         """
-        self.url = url if url else f"{EXTERNAL['product']}{alias}"
+        self.alias = region_code
+        self.url = url if url else f"{EXTERNAL['product']}{self.alias}"
         self.soup = None
         self.specs = []
 
     def __get_title(self) -> str:
 
         return self.soup.find("h1", GAME_SELECTORS["title"]).text
+
+    def __get_region_code(self):
+        if self.alias:
+            return self.alias
+        else:
+            return re.sub(r'.*product/', '', self.url)
 
     def __get_publisher(self) -> str:
         try:
@@ -163,36 +170,27 @@ class PS4Game:
         self.__load_page()
 
         return {
-            "title": self.__get_title(),
-            "link": self.url,
-            "cover": self.__get_cover_picture(),
-            "details": {
-                "about": {
-                    "description": self.__get_description(),
-                    "genres": self.__get_genres(),
-                    "ages": self.__get_rating(),
-                    "publisher": self.__get_publisher(),
-                    "release_date": self.__get_release_date(),
-                    "category": self.__get_category(),
-                },
-                "platforms": {
-                    "supported": self.__get_platforms(),
-                    "ps4pro": self.__get_ps_pro_tuned()
-                },
-                "pricing": {
-                    "final_price": self.__get_price(),
-                    "original_price": self.__get_original_price()
-                },
-                "language": {
-                    "audio": self.__get_voice(),
-                    "subtitles": self.__get_subtitles()
-                },
-                "misc": {
-                    "in_game_purchases": self.__get_in_game_purchases(),
-                    "online": self.__get_online_gaming(),
-                    "ps_plus_required": self.__get_ps_plus_required(),
-                    "ps_vr_support": self.__get_ps_vr_support()
-                }
+            "title":          self.__get_title(),
+            "link":           self.url,
+            "region_code":    self.__get_region_code(),
+            "cover":          self.__get_cover_picture(),
+            "description":    self.__get_description(),
+            "genres":         self.__get_genres(),
+            "ages":           self.__get_rating(),
+            "publisher":      self.__get_publisher(),
+            "release_date":   self.__get_release_date(),
+            "final_price":    self.__get_price(),
+            "original_price": self.__get_original_price(),
+            "audio":          self.__get_voice(),
+            "subtitles":      self.__get_subtitles(),
+            "misc": {
+                "category":          self.__get_category(),
+                "supported":         self.__get_platforms(),
+                "ps4pro":            self.__get_ps_pro_tuned(),
+                "in_game_purchases": self.__get_in_game_purchases(),
+                "online":            self.__get_online_gaming(),
+                "ps_plus_required":  self.__get_ps_plus_required(),
+                "ps_vr_support":     self.__get_ps_vr_support()
             }
         }
 
@@ -214,5 +212,8 @@ class PS4Game:
         """
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
 
-
-PS4Game(alias='EP0082-CUSA19120_00-0000000000000000').as_json()
+    def as_dict(self) -> dict:
+        """
+        Return game info as <<dict>> object
+        """
+        return self.__make_payload()

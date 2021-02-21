@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="psstore4-ru",
-    version="0.0.5",
+    version="1.0.0",
     author="Ian Gabaraev",
     author_email="hrattisianees@gmail.com",
-    description="Play Station 4 Store Russian Python Interface",
+    description="Play Station Store Russian Python Interface",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Ian-Gabaraev/psstorereader",

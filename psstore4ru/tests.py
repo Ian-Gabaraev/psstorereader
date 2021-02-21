@@ -12,30 +12,28 @@ class Games(unittest.TestCase):
         Test if "online gaming" flag is processed correctly
         for games without online mode
         """
-        targets = [
+        target_games_region_codes = [
             'EP0082-CUSA19120_00-0000000000000000',  # DRAGON QUEST XI S
             'EP4365-CUSA17615_00-WAR40KMECHANICUS',
             'EP4826-CUSA18828_00-0000000000000001',
             'EP3111-CUSA19519_00-JANDUSOFT0000001',
             'EP3877-CUSA20588_00-FLYINGBASEGAME00',  # Flying Soldiers
-            'EP0082-CUSA24813_00-BALANWWE00000001',  # Balan Wonderworld
         ]
 
-        results = [
-            dict(json.loads(PS4Game(alias=target).as_json()))['details']['misc']['online']
-            for target in targets
+        online_gaming_statuses = [
+            dict(json.loads(PS4Game(region_code=region_code).as_json()))['misc']['online']
+            for region_code in target_games_region_codes
         ]
 
-        self.assertEqual(results, [False for _ in range(len(targets))])
+        self.assertEqual(online_gaming_statuses, [False for _ in range(len(target_games_region_codes))])
 
     def test_online_game_support_online_supported(self):
         """
         Test if "online gaming" flag is processed correctly
         for games with online mode
         """
-        targets = [
+        target_games_region_codes = [
             'EP0700-CUSA05392_00-DIGIMONWORLDNE0A',  # Digimon World: Next Order
-            'EP1464-CUSA07669_00-PSCP110000000000',  # Fortnite
             'EP9001-CUSA02168_00-GTSPORT000000000',  # Gran Turismo Sport
             'EP4947-CUSA15055_00-CONCEPTION1EU000',  # Conception PLUS
             'EP1001-CUSA19467_00-00000PGATOUR2K21',  # PGA TOUR 2K21
@@ -44,12 +42,12 @@ class Games(unittest.TestCase):
             'EP0102-CUSA07340_00-DDDAFULLGAME0000',  # Dragon's Dogma: Dark Arisen
         ]
 
-        results = [
-            dict(json.loads(PS4Game(alias=target).as_json()))['details']['misc']['online']
-            for target in targets
+        online_gaming_statuses = [
+            dict(json.loads(PS4Game(region_code=region_code).as_json()))['misc']['online']
+            for region_code in target_games_region_codes
         ]
 
-        self.assertEqual(results, [True for _ in range(len(targets))])
+        self.assertEqual(online_gaming_statuses, [True for _ in range(len(target_games_region_codes))])
 
 
 class AsynchronousMethods(unittest.TestCase):
