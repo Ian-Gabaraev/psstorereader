@@ -12,7 +12,7 @@ game = PS4Game(region_code="EP0002-CUSA23470_00-CB4STANDARD00001")
 print(game.as_json())
 ```
 
-#### **psstore4 supports different output formats, namely:**
+#### **psstore supports different output formats, namely:**
 
 ```python
 from psstore4ru.core.scraping_routines.game_page import PS4Game
@@ -23,7 +23,7 @@ print(game.as_json())
 print(game.as_yaml())
 ```
 
-##### Syncronous scraping is slow, so psstore utilizes asynchronicity
+#### Syncronous scraping is slow, so psstore utilizes asynchronicity
 ##### Get CUSA codes from the first 10 pages on PS Store
 ```python
 from psstore4ru.core.asynchronous import PSStore
