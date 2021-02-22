@@ -1,4 +1,4 @@
-### **Python interface for PlayStation4 Store Russia**
+### **Python interface for PlayStation Store Russia**
 
 #### **Basic Usage**
 
