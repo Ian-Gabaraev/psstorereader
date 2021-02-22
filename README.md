@@ -1,3 +1,6 @@
+![GitHub repo size](https://img.shields.io/github/repo-size/Ian-Gabaraev/psstorereader)
+
+
 ### **Python interface for PlayStation Store Russia**
 
 #### **Basic Usage**
