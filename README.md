@@ -1,8 +1,6 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/psstore-ru)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Ian-Gabaraev/psstorereader)
-![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/Ian-Gabaraev/psstorereader)
 ![GitHub](https://img.shields.io/github/license/Ian-Gabaraev/psstorereader)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ian-Gabaraev/psstorereader)
 ![Maintenance](https://img.shields.io/maintenance/yes/2021)
 
 ### **Python interface for PlayStation Store Russia**
