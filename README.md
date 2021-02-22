@@ -7,6 +7,8 @@
 
 #### **Basic Usage**
 
+![Usa](https://github.com/Ian-Gabaraev/psstorereader/blob/master/psstore4ru/usage/ezgif.com-video-to-gif(1).gif)
+
 ##### Get JSON representation of a game by CUSA code
 
 ```python
