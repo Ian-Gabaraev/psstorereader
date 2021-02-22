@@ -23,6 +23,18 @@ print(game.as_dict())
 print(game.as_yaml())
 ```
 
+#### You decide what category of games you want to scrape
+```python
+from psstore4ru.core.deprecated import PSStore
+
+def get_all_free_to_play_games():
+    cusa_codes = PSStore().get_f2p_games_links()
+    
+    for code in cusa_codes:
+            game = PS4Game(region_code=code)
+            print(game.as_yaml())
+```
+
 #### Synchronous scraping is slow, so psstore utilizes asynchronicity
 ##### Get CUSA codes from the first 10 pages on PS Store
 ```python
