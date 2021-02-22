@@ -1,4 +1,5 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/Ian-Gabaraev/psstorereader)
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/Ian-Gabaraev/psstorereader)
 
 
 ### **Python interface for PlayStation Store Russia**
@@ -42,7 +43,7 @@ def get_all_free_to_play_games():
 ##### Get CUSA codes from the first 10 pages on PS Store
 ```python
 from psstore4ru.core.asynchronous import PSStore
-from psstore4ru.core.scraping_routines.game_page import PS4Game
+from psstore4ru.core.scraping_routines.game_page import PS4Gam
 
 async def get_games_as_dict_fast():
     cusa_codes = await PSStore.get_all_games_links(iterations=10)
