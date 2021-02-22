@@ -3,7 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/Ian-Gabaraev/psstorereader)
 ![Maintenance](https://img.shields.io/maintenance/yes/2021)
 
-### **Python interface for PlayStation Store Russia**
+### **Python interface for PlayStation&reg; Store**
 
 #### **Basic Usage**
 
