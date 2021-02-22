@@ -19,7 +19,7 @@ from psstore4ru.core.scraping_routines.game_page import PS4Game
 
 game = PS4Game(region_code="EP0002-CUSA23470_00-CB4STANDARD00001")
 
-print(game.as_json())
+print(game.as_dict())
 print(game.as_yaml())
 ```
 
