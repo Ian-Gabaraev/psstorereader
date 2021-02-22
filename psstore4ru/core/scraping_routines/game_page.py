@@ -1,43 +1,33 @@
 import requests
-import uuid
 import re
 import json
 import yaml
-from .utils import get_async_soup
-from .variables import GAME_SELECTORS, EXTERNAL
+from psstore4ru.core.scraping_routines.meta.variables import EXTERNAL, GAME_SELECTORS
 from bs4 import BeautifulSoup
-import asyncio
-from aiohttp import ClientSession
-from aiohttp import TCPConnector
-from .variables import HEADERS
 
 
 class PS4Game:
-    def __init__(self, url: str = None, region_code: str = None, soup=None):
+    def __init__(self, url: str = None, region_code: str = None):
         """
         :param url: https://store.playstation.com/ru-ru/product/EP0002-CUSA23470_00-CB4STANDARD00001
         :param region_code: EP0002-CUSA23470_00-CB4STANDARD00001
         """
-        self.url = url
-        self.region_code = region_code
-        self.soup = soup
+        self.alias = region_code
+        self.url = url if url else f"{EXTERNAL['product']}{self.alias}"
+        self.soup = None
         self.specs = []
 
-    def __get_title(self):
-        try:
-            title = self.soup.find("h1", GAME_SELECTORS["title"]).text
-        except AttributeError:
-            return ""
-        else:
-            return title
+    def __get_title(self) -> str:
+
+        return self.soup.find("h1", GAME_SELECTORS["title"]).text
 
     def __get_region_code(self):
-        if self.region_code:
-            return self.region_code
+        if self.alias:
+            return self.alias
         else:
-            return re.sub(pattern=r".*product/", string=self.url, repl="")
+            return re.sub(r'.*product/', '', self.url)
 
-    def __get_publisher(self):
+    def __get_publisher(self) -> str:
         try:
             publisher = self.soup.find("div", GAME_SELECTORS["publisher"]).text
         except AttributeError:
@@ -45,10 +35,10 @@ class PS4Game:
         else:
             return "" if '\n' in publisher else publisher
 
-    def __get_category(self):
+    def __get_category(self) -> str:
         return "Предзаказ" if self.__get_preorder() else "Обычный"
 
-    def __get_release_date(self):
+    def __get_release_date(self) -> str:
         try:
             return self.soup.find("dd", GAME_SELECTORS["release"]).text
         except AttributeError:
@@ -84,18 +74,16 @@ class PS4Game:
                 genre.lstrip() for genre in genres.split(',')
             ]
 
-    def __get_platforms(self):
+    def __get_platforms(self) -> str:
         try:
             return self.soup.find("dd", GAME_SELECTORS["platforms"]).text
         except AttributeError:
             return ""
 
-    def __get_rating(self):
+    def __get_rating(self) -> str:
         try:
             return self.soup.find("img", GAME_SELECTORS["rating"])['alt']
         except AttributeError:
-            return ""
-        except TypeError:
             return ""
 
     def __get_in_game_purchases(self) -> bool:
@@ -103,10 +91,16 @@ class PS4Game:
 
         return True if match else False
 
-    def __get_online_gaming(self) -> bool:
-        match = self.soup.find("span", GAME_SELECTORS["online_gaming"])
+    def __only_single_player_mode(self) -> bool:
+        match_single_player = self.soup.find_all(string=GAME_SELECTORS["single_player"])
+        match_online_gaming = self.soup.find_all(string=GAME_SELECTORS["online_gaming"])
 
-        return True if (match or self.__get_ps_plus_required()) else False
+        return True if (match_single_player and not match_online_gaming) else False
+
+    def __get_online_gaming(self) -> bool:
+        online_gaming_supported = (not self.__only_single_player_mode()) or self.__get_ps_plus_required()
+
+        return True if online_gaming_supported else False
 
     def __get_ps_plus_required(self) -> bool:
         match = self.soup.find("span", GAME_SELECTORS["ps_plus_required"])
@@ -128,7 +122,7 @@ class PS4Game:
 
         return True if match else False
 
-    def __get_cover_picture(self):
+    def __get_cover_picture(self) -> str:
         try:
             cover_picture_url = self.soup.select(GAME_SELECTORS["cover_picture"])[0]['src']
         except AttributeError:
@@ -138,7 +132,7 @@ class PS4Game:
         else:
             return re.sub(pattern=r'\?.*', repl='', string=cover_picture_url)
 
-    def __get_price(self):
+    def __get_price(self) -> int:
         try:
             return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["price"]).text))
         except AttributeError:
@@ -146,19 +140,19 @@ class PS4Game:
         except ValueError:
             return 0
 
-    def __get_original_price(self):
+    def __get_original_price(self) -> int:
         try:
             return int(re.sub(r'\D', '', self.soup.find("span", GAME_SELECTORS["original_price"]).text))
         except AttributeError:
             return 0
 
-    def __get_ps_plus(self):
+    def __get_ps_plus(self) -> str:
         try:
             return self.soup.find("div", GAME_SELECTORS["psplus discount"]).text
         except AttributeError:
             return ""
 
-    def __get_description(self):
+    def __get_description(self) -> str:
         try:
             return self.soup.find("p", GAME_SELECTORS["description"]).text
         except AttributeError:
@@ -173,52 +167,34 @@ class PS4Game:
         """
         Returns a dict of game specs
         """
-        if not self.soup:
-            self.__load_page()
+        self.__load_page()
 
         return {
-            "title": self.__get_title(),
-            "uri": self.url,
-            "region_code": self.__get_region_code(),
-            "cover": self.__get_cover_picture(),
-            "details": {
-                "about": {
-                    "description": self.__get_description(),
-                    "genres": self.__get_genres(),
-                    "ages": self.__get_rating(),
-                    "publisher": self.__get_publisher(),
-                    "release_date": self.__get_release_date(),
-                    "category": self.__get_category(),
-                },
-                "platforms": {
-                    "supported": self.__get_platforms(),
-                    "ps4pro": self.__get_ps_pro_tuned()
-                },
-                "pricing": {
-                    "final_price": self.__get_price(),
-                    "original_price": self.__get_original_price()
-                },
-                "language": {
-                    "audio": self.__get_voice(),
-                    "subtitles": self.__get_subtitles()
-                },
-                "misc": {
-                    "in_game_purchases": self.__get_in_game_purchases(),
-                    "online": self.__get_online_gaming(),
-                    "ps_plus_required": self.__get_ps_plus_required(),
-                    "ps_vr_support": self.__get_ps_vr_support()
-                }
+            "title":          self.__get_title(),
+            "link":           self.url,
+            "region_code":    self.__get_region_code(),
+            "cover":          self.__get_cover_picture(),
+            "description":    self.__get_description(),
+            "genres":         self.__get_genres(),
+            "ages":           self.__get_rating(),
+            "publisher":      self.__get_publisher(),
+            "release_date":   self.__get_release_date(),
+            "final_price":    self.__get_price(),
+            "original_price": self.__get_original_price(),
+            "audio":          self.__get_voice(),
+            "subtitles":      self.__get_subtitles(),
+            "misc": {
+                "category":          self.__get_category(),
+                "supported":         self.__get_platforms(),
+                "ps4pro":            self.__get_ps_pro_tuned(),
+                "in_game_purchases": self.__get_in_game_purchases(),
+                "online":            self.__get_online_gaming(),
+                "ps_plus_required":  self.__get_ps_plus_required(),
+                "ps_vr_support":     self.__get_ps_vr_support()
             }
         }
 
-    def as_dict(self):
-        """
-        Return game info as python
-        <dict> object
-        """
-        return self.__make_payload()
-
-    def as_yaml(self):
+    def as_yaml(self) -> str:
         """
         Return game info as YAML
         """
@@ -230,40 +206,14 @@ class PS4Game:
         """
         pass
 
-    def as_json(self):
+    def as_json(self) -> str:
         """
         Return game info as JSON
         """
         return json.dumps(self.__make_payload(), ensure_ascii=False, indent=4)
 
-
-async def launch():
-    tasks = []
-
-    f = open("links.json", "r")
-    content = f.read()
-    js = dict(json.loads(content))
-    links = list(js.values())[:200]
-
-    async with ClientSession(headers=HEADERS, connector=TCPConnector(ssl=False)) as session:
-        for link in links:
-            task = asyncio.ensure_future(
-                get_async_soup(
-                        session=session, url=f"{EXTERNAL['product']}{link}"
-                )
-            )
-            tasks.append(task)
-
-        soups = await asyncio.gather(*tasks)
-
-        f = open("games.json", "a")
-        f.write('{')
-
-        for index, soup in enumerate(soups):
-            string = PS4Game(url=soup[1], soup=soup[0]).as_json()
-            f.write(f'"{str(uuid.uuid4())}": {string},')
-        f.write('}')
-
-loop = asyncio.get_event_loop()
-future = asyncio.ensure_future(launch())
-loop.run_until_complete(future)
+    def as_dict(self) -> dict:
+        """
+        Return game info as <<dict>> object
+        """
+        return self.__make_payload()

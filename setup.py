@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="psstore-ru",
-    version="1.0.1",
+    version="2.0.0",
     author="Ian Gabaraev",
     author_email="hrattisianees@gmail.com",
     description="Play Station Store Russian Python Interface",

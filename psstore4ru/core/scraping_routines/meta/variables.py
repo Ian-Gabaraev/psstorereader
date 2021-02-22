@@ -17,6 +17,15 @@ SELECTORS = {
     "collect full": {'href': re.compile(r'\/ru-ru\/product\/.*')},
     "ps plus container": {'class': 'grid-cell--game'},
     "ps plus link": {'class': 'internal-app-link'},
+
+    "products": {'id': "__NEXT_DATA__"},
+    "products_script_tag_opening": '[<script id="__NEXT_DATA__" type="application/json">',
+    "products_script_tag_closing": '</script>]',
+
+    "products_json_root": 'props',
+    "products_json_root_descendant": 'apolloState',
+    "category_grid_pattern": r'\'CategoryGrid:[\d\w\-]+\:ru-ru\:[\d]+\:[\d]+\'',
+    "cusa_pattern": r'.*:(.*):ru-ru',
 }
 
 GAME_SELECTORS = {

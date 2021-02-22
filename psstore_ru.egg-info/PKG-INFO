@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: psstore-ru
+Version: 1.0.1
+Summary: Play Station Store Russian Python Interface
+Home-page: https://github.com/Ian-Gabaraev/psstorereader
+Author: Ian Gabaraev
+Author-email: hrattisianees@gmail.com
+License: UNKNOWN
+Description: ### **Python interface for PlayStation4 Store Russia**
+        
+        #### **Basic Usage**
+        
+        ```python
+        from psstore4ru.games import PS4Game
+        game = PS4Game(alias="EP0002-CUSA23470_00-CB4STANDARD00001")
+        
+        print(game.as_json())
+        ```
+        
+        #### **psstore4 supports different output formats, namely:**
+        ```python
+        from psstore4ru.games import PS4Game
+        game = PS4Game(alias="EP0002-CUSA23470_00-CB4STANDARD00001")
+        
+        print(game.as_json())
+        print(game.as_yaml())
+        ```
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

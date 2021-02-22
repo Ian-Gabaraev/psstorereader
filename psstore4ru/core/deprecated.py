@@ -1,9 +1,9 @@
-import json
-from .utils import Helpers
-from .variables import EXTERNAL, SELECTORS
+from psstore4ru.core.scraping_routines.utils.reusable import Helpers
+from psstore4ru.core.scraping_routines.meta.variables import EXTERNAL
+from psstore4ru.core.scraping_routines.catalogue_page import Scraper
 
 
-class PS4StoreRussia:
+class PSStore:
 
     def __init__(self):
         self.links = set()
@@ -12,8 +12,7 @@ class PS4StoreRussia:
         self.soon_tbr_games = set()
         self.vr_games = set()
 
-    @staticmethod
-    def __collect_multi_page_links(source: str, target: set):
+    def __collect_multi_page_links(self, source: str, target: set):
         """
         Collects all the links from all the pages
         :param source: page URL to crawl
@@ -21,26 +20,17 @@ class PS4StoreRussia:
         """
         start_page = 1
         soup = Helpers.get_soup(source % start_page)
-        links = (link for link in soup.find_all('a', SELECTORS["collect ng"]))
+        products = Scraper(soup).get_products_dictionary()
+        links = (Scraper.extract_cusa_code(product) for product in products)
 
         while links:
             for link in links:
-                target.add(json.loads(link['data-telemetry-meta'])['id'])
+                target.add(link)
 
             start_page += 1
             soup = Helpers.get_soup(source % start_page)
-            links = soup.find_all('a', SELECTORS["collect ng"])
-
-    def __collect_all_catalogue_links(self, number: int):
-        """
-        Collects all the links from a page
-        :param number: page number
-        """
-        soup = Helpers.get_soup(EXTERNAL["all"] % number)
-        links = (link for link in soup.find_all('a', SELECTORS["collect ng"]))
-
-        for link in links:
-            self.links.add(json.loads(link['data-telemetry-meta'])['id'])
+            products = Scraper(soup).get_products_dictionary()
+            links = (Scraper.extract_cusa_code(product) for product in products)
 
     def get_all_games_links(self):
         self.__collect_multi_page_links(source=EXTERNAL['all'], target=self.links)

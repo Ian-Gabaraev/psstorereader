@@ -3,13 +3,13 @@ import uuid
 import re
 import json
 import yaml
-from utils import get_async_soup
-from variables import GAME_SELECTORS, EXTERNAL
+from .utils import get_async_soup
+from .variables import GAME_SELECTORS, EXTERNAL
 from bs4 import BeautifulSoup
 import asyncio
 from aiohttp import ClientSession
 from aiohttp import TCPConnector
-from variables import HEADERS
+from .variables import HEADERS
 
 
 class PS4Game:

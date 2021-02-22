@@ -1,11 +1,11 @@
-import json
 import asyncio
 import aiohttp
-from .utils import get_async_soup
-from .variables import EXTERNAL, SELECTORS
+from psstore4ru.core.scraping_routines.catalogue_page import Scraper
+from psstore4ru.core.scraping_routines.utils.reusable import Helpers
+from psstore4ru.core.scraping_routines.meta.variables import EXTERNAL
 
 
-class EnMasse:
+class PSStore:
     """
     Introduces methods for fetching game IDs
     in bulk in asynchronous manner
@@ -23,9 +23,10 @@ class EnMasse:
     def soups_to_links(soups: list) -> set:
         results = set()
         for soup_object in soups:
-            links = (link for link in soup_object[0].find_all('a', SELECTORS["collect ng"]))
+            products = Scraper(soup_object[0]).get_products_dictionary()
+            links = (Scraper.extract_cusa_code(product) for product in products)
             for link in links:
-                results.add(json.loads(link['data-telemetry-meta'])['id'])
+                results.add(link)
 
         return results
 
@@ -41,60 +42,60 @@ class EnMasse:
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
             for page_number in range(1, iterations+1):
                 task = asyncio.ensure_future(
-                    get_async_soup(session=session, url=source % page_number)
+                    Helpers.get_async_soup(session=session, url=source % page_number)
                 )
                 tasks.append(task)
 
             responses = await asyncio.gather(*tasks)
 
-            return EnMasse.pop_empty_results(responses)
+            return PSStore.pop_empty_results(responses)
 
     @staticmethod
     async def get_all_games_links(iterations) -> set:
         """
         Retrieve all games IDs
         """
-        raw_data = await EnMasse.collect_multi_page_links(
+        raw_data = await PSStore.collect_multi_page_links(
             source=EXTERNAL['all'], iterations=iterations)
 
-        return EnMasse.soups_to_links(raw_data)
+        return PSStore.soups_to_links(raw_data)
 
     @staticmethod
     async def get_all_soon_tbr_games_links(iterations) -> set:
         """
         Retrieve all games IDs from "Soon to be released"
         """
-        raw_data = await EnMasse.collect_multi_page_links(
+        raw_data = await PSStore.collect_multi_page_links(
             source=EXTERNAL['soon'], iterations=iterations)
 
-        return EnMasse.soups_to_links(raw_data)
+        return PSStore.soups_to_links(raw_data)
 
     @staticmethod
     async def get_all_f2p_games_links(iterations) -> set:
         """
         Retrieve all games IDs from "Free to play"
         """
-        raw_data = await EnMasse.collect_multi_page_links(
+        raw_data = await PSStore.collect_multi_page_links(
             source=EXTERNAL['f2p'], iterations=iterations)
 
-        return EnMasse.soups_to_links(raw_data)
+        return PSStore.soups_to_links(raw_data)
 
     @staticmethod
     async def get_all_vr_games_links(iterations) -> set:
         """
         Retrieve all games IDs from "VR"
         """
-        raw_data = await EnMasse.collect_multi_page_links(
+        raw_data = await PSStore.collect_multi_page_links(
             source=EXTERNAL['vr'], iterations=iterations)
 
-        return EnMasse.soups_to_links(raw_data)
+        return PSStore.soups_to_links(raw_data)
 
     @staticmethod
     async def get_all_new_games_links(iterations) -> set:
         """
         Retrieve all games IDs from "New"
         """
-        raw_data = await EnMasse.collect_multi_page_links(
+        raw_data = await PSStore.collect_multi_page_links(
             source=EXTERNAL['latest'], iterations=iterations)
 
-        return EnMasse.soups_to_links(raw_data)
+        return PSStore.soups_to_links(raw_data)

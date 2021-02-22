@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from variables import HEADERS
+from .variables import HEADERS
 import requests
 
 

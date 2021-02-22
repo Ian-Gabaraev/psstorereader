@@ -1,8 +1,8 @@
 import unittest
 import json
-from .games import PS4Game
+from psstore4ru.core.scraping_routines.game_page import PS4Game
 import asyncio
-from .enmasse import EnMasse
+from psstore4ru.core.asynchronous import PSStore
 
 
 class Games(unittest.TestCase):
@@ -57,7 +57,7 @@ class AsynchronousMethods(unittest.TestCase):
         Test if fetching Free To Play games in bulk returns non-empty set:
         """
         loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(EnMasse.get_all_f2p_games_links(iterations=3))
+        future = asyncio.ensure_future(PSStore.get_all_f2p_games_links(iterations=3))
         result = loop.run_until_complete(future)
 
         self.assertTrue(bool(result))
@@ -67,7 +67,7 @@ class AsynchronousMethods(unittest.TestCase):
         Test if fetching To Be Released games in bulk returns non-empty set
         """
         loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(EnMasse.get_all_soon_tbr_games_links(iterations=3))
+        future = asyncio.ensure_future(PSStore.get_all_soon_tbr_games_links(iterations=3))
         result = loop.run_until_complete(future)
 
         self.assertTrue(bool(result))
@@ -77,7 +77,7 @@ class AsynchronousMethods(unittest.TestCase):
         Test if fetching VR games in bulk returns non-empty set
         """
         loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(EnMasse.get_all_vr_games_links(iterations=3))
+        future = asyncio.ensure_future(PSStore.get_all_vr_games_links(iterations=3))
         result = loop.run_until_complete(future)
 
         self.assertTrue(bool(result))
@@ -87,7 +87,7 @@ class AsynchronousMethods(unittest.TestCase):
         Test if fetching new games in bulk returns non-empty set
         """
         loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(EnMasse.get_all_new_games_links(iterations=3))
+        future = asyncio.ensure_future(PSStore.get_all_new_games_links(iterations=3))
         result = loop.run_until_complete(future)
 
         self.assertTrue(bool(result))
@@ -97,7 +97,7 @@ class AsynchronousMethods(unittest.TestCase):
         Test if fetching all games in bulk returns non-empty set
         """
         loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(EnMasse.get_all_games_links(iterations=3))
+        future = asyncio.ensure_future(PSStore.get_all_games_links(iterations=3))
         result = loop.run_until_complete(future)
 
         self.assertTrue(bool(result))
