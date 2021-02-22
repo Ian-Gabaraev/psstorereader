@@ -23,7 +23,7 @@ print(game.as_json())
 print(game.as_yaml())
 ```
 
-#### Syncronous scraping is slow, so psstore utilizes asynchronicity
+#### Synchronous scraping is slow, so psstore utilizes asynchronicity
 ##### Get CUSA codes from the first 10 pages on PS Store
 ```python
 from psstore4ru.core.asynchronous import PSStore
