@@ -14,6 +14,10 @@ from psstore4ru.core.scraping_routines.game_page import PS4Game
 
 
 async def launch():
+    """
+    Collects data on all games by CUSA codes
+    stored in links.json file
+    """
     tasks = []
 
     f = open("links.json", "r")
