@@ -42,6 +42,15 @@ def get_all_free_to_play_games():
             print(game.as_yaml())
 ```
 
+#### You can also scrape off a game's specs using its url instead of CUSA code
+```python
+from psstore4ru.core.scraping_routines.game_page import PS4Game
+
+game = PS4Game(url="https://store.playstation.com/ru-ru/product/EP0002-CUSA23470_00-CB4STANDARD00001")
+
+print(game.as_dict())
+```
+
 #### Synchronous scraping is slow, so psstore utilizes asynchronicity
 ##### Get CUSA codes from the first 10 pages on PS Store
 ```python
