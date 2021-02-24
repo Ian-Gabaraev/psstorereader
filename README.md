@@ -38,7 +38,7 @@ def get_all_free_to_play_games():
     """
     A call to method
     PSStore().get_f2p_games_links()
-    returns a list of CUSA codes correspondings
+    returns a list of CUSA codes corresponding
     to Free-to-Play games on the PS Store,
     e.g ['EP6261-CUSA23678_00-OSRELSIEEGENSHIN', 'EP8062-CUSA17849_00-0190589937083212', ...]
     """
