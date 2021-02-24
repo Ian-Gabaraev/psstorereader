@@ -35,6 +35,13 @@ print(game.as_yaml())
 from psstore4ru.core.deprecated import PSStore
 
 def get_all_free_to_play_games():
+    """
+    A call to method
+    PSStore().get_f2p_games_links()
+    returns a list of CUSA codes correspondings
+    to Free-to-Play games on the PS Store,
+    e.g ['EP6261-CUSA23678_00-OSRELSIEEGENSHIN', 'EP8062-CUSA17849_00-0190589937083212', ...]
+    """
     cusa_codes = PSStore().get_f2p_games_links()
     
     for code in cusa_codes:
