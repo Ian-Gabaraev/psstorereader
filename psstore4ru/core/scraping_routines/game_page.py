@@ -166,6 +166,9 @@ class PS4Game:
     def __make_payload(self):
         """
         Returns a dict of game specs
+        Scraping is lazy: no requests to the Store
+        are sent until this method is called
+        from output formatter methods
         """
         self.__load_page()
 
